@@ -1,0 +1,11 @@
+
+# GITIGNORE #
+
+# JSON extensions
+*.json
+
+# RAW extensions
+*.raw
+
+# Error while installing google client libraries
+ERROR

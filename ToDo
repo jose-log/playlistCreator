@@ -1,0 +1,17 @@
+
+ToDo:
+
+Google API: review the non-oauth APIs and run one example using urllib.
+Include database management using SQLite
+Spotify API review and structure
+
+https://www.youtube.com/watch?v=7J_qcttfnJA&list=WL&index=79&t=0s
+
+GitHub 
+https://github.com/TheComeUpCode/SpotifyGeneratePlaylist
+
+In this video we use:
+-Youtube Data API: https://developers.google.com/youtube/v3
+-Spotify Web API: https://developer.spotify.com/documentation/web-api/
+-youtube_dl: https://github.com/ytdl-org/youtube-dl
+-python requests library: https://requests.readthedocs.io/en/master/
