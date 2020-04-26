@@ -11,8 +11,10 @@
 *.sqlite
 *.db
 
-# PYCACHE
+# Folders
 __pycache__/*
+spotify/*
+youtube-api-samples/*
 
 # Error while installing google client libraries
 ERROR

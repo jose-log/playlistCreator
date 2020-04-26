@@ -97,7 +97,9 @@ if __name__ == "__main__":
                                             part = 'snippet,contentDetails',
                                             myRating = 'like',
                                             maxResults = 50,
-                                            pageToken = nxtPage)
+                                            pageToken = nxtPage,
+                                            fields=items(id,contentDetails(duration),snippet(title)))
+
             except:
                 print('ERROR Requesting the API. Exiting.')
                 print(response)
