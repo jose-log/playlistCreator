@@ -7,6 +7,13 @@
 # RAW extensions
 *.raw
 
+# DataBase file
+*.sqlite
+*.db
+
+# PYCACHE
+__pycache__/*
+
 # Error while installing google client libraries
 ERROR
 

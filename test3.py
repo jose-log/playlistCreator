@@ -1,4 +1,5 @@
-# -*- coding: utf-8 -*-
+#!/usr/bin/env python3
+
 
 # Sample Python code for youtube.channels.list
 # See instructions for running these code samples locally:
@@ -11,6 +12,10 @@ import googleapiclient.discovery
 import googleapiclient.errors
 
 import json
+import sqlite3       # Database management
+
+import db
+import iso8601 as iso
 
 API_SERVICE_NAME = 'youtube'
 API_VERSION = 'v3'
@@ -42,6 +47,12 @@ def request_service(service, **kwargs):
     request = collection.list(**kwargs)     # HTTP Request object        
     return request.execute()                # Execute the request and get a response
 
+
+
+#******************************************************************************
+#                              MAIN PROGRAM
+#******************************************************************************
+
 if __name__ == "__main__":
 
     print('\n\rHello World!\n\r< YOUTUBE INFO DOWNLOADER >')
@@ -66,6 +77,8 @@ if __name__ == "__main__":
             print('INVALID!')
     
     if download is True:
+    # Connects to the YouTube Data API and requests the desired playlist.
+    # The resulting response is stored in a set of JSON-formatted files 
 
         # Disable OAuthlib's HTTPS verification when running locally.
         # *DO NOT* leave this option enabled in production.
@@ -115,10 +128,10 @@ if __name__ == "__main__":
                 break 
 
     else:
+    # If files are already downloaded, it requests the file names
 
         print('Enter the file names to be evaluated. Enter \'q\' when finished')
         i = 1
-        x_quit = 'qQ'
         while True:
 
             x = input('File {}: '.format(i))
@@ -137,7 +150,6 @@ if __name__ == "__main__":
                 print('ERROR. File does NOT exists. Please try again')
 
     # Extract info from files
-        
     for f in files:
         fh = open(f)
         js = json.load(fh)
@@ -146,10 +158,16 @@ if __name__ == "__main__":
         print('\n\n' + f + ':\n\n')
         print(' > Results in file: {}'.format(js['pageInfo']['resultsPerPage']))
 
+        # Init database
+        db.db_init()
         # Retrieving Useful Info
         c = 0
         for i in js['items']:
+            # Store data into the data base
+            db.db_insert_video(i['snippet']['title'], iso.get_time(i['contentDetails']['duration']))
             print(' > Video {}: {} | time = {}'.format(c + 1, i['snippet']['title'], i['contentDetails']['duration']))
+
             c += 1
+    
     
     print('\n\n... FINISH! ...')
