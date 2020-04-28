@@ -11,6 +11,15 @@
 *.sqlite
 *.db
 
+# Text files
+*.txt
+
+# Secrets
+spotify_secrets.py
+
+# Images
+*.png
+
 # Folders
 __pycache__/*
 spotify/*
