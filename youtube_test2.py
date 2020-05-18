@@ -21,7 +21,7 @@ def main():
 
     api_service_name = "youtube"
     api_version = "v3"
-    client_secrets_file = "oauth.json"
+    client_secrets_file = "youtube_oauth.json"
 
     #*******************************************
     # Get credentials and create an API client

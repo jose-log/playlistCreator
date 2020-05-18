@@ -1,6 +1,17 @@
 
 # Spotify API: https://developer.spotify.com/documentation/web-api/
 # OAuth doc: https://oauth.net/articles/authentication/
+#
+# This script implements all the basic functionality to interface with the
+# spotify API using the Requests module and the documentation given in
+# the API developers page.
+#
+# It does NOT implement a direct OAuth authentication procedure, but instead
+# it uses the web API token generator to generate an access token and use it
+# to access user's data.
+#
+# Direct OAuth implementation was performed in a separate script, where an
+# HTTP server is built and listens to the OAuth redirection scheme
 
 # Requests module: https://requests.readthedocs.io/en/master/
 import requests

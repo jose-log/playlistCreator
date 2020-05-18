@@ -16,9 +16,10 @@
 
 # Secrets
 spotify_secrets.py
+.cache*
 
-# Images
-*.png
+# Sample javascript
+*.js
 
 # Folders
 __pycache__/*
@@ -30,3 +31,4 @@ ERROR
 
 # Personal Documentation
 DOCUMENTATION
+ToDo
