@@ -1,3 +1,4 @@
+#!/bin/env python3
 
 # This script implements direct OAuth authentication protocol based on the
 # Spotify web API documentation. The Authentication process uses the
@@ -33,7 +34,7 @@ token_url = 'https://accounts.spotify.com/api/token'
 service_url = 'https://api.spotify.com/v1'
 redirect_uri = 'http://localhost:9090'
 
-cache_path = '/.cache-token'
+cache_path = './.cache-token'
 
 scopes = {}
 scopes['add_item_to_playlist'] = 'playlist-modify-public playlist-modify-private'
@@ -97,6 +98,7 @@ def get_authorization_code():
 	server = start_local_http_server(redirect_port)
 
 	state = generate_random_string(20)
+	print('  - State string: ' + state)
 	url = build_authorize_url(state)
 	print('> OAuth Authorization URL:', url)
 	try:
@@ -110,8 +112,9 @@ def get_authorization_code():
 
 	if server.auth_code is not None:
 		code = server.auth_code
-		if(server.state is not state):
+		if server.state.strip() != state:
 			print('ERROR: response state don\'t match')
+			print(server.state)
 	elif server.error is not None:
 		print('Received error from OAuth server: {}'.format(server.error))
 		exit()
@@ -155,7 +158,7 @@ def generate_random_string(length):
 	rand = ''
 	universe = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789'
 	for i in range(length):
-		rand += universe[random.randint(0, len(universe))]
+		rand += universe[random.randint(0, len(universe) - 1)]
 
 	return rand
 
@@ -206,6 +209,7 @@ def save_token_info(token_info):
 def get_cached_token():
 
 	token_info = None
+	print('  - Extracting cached token')
 
 	try:
 		f = open(cache_path)
@@ -220,6 +224,7 @@ def get_cached_token():
 
 ###########################################################################
 def is_token_expired(token_info):
+
 	now = int(time.time())
 	# if expiration time is less than a minute
 	return token_info['expires_at'] - now < 60
@@ -256,11 +261,15 @@ def request_valid_token():
 	token_info = get_cached_token()
 	
 	if token_info is None:
-		print('ERROR! No cached token was found')
+		print('FAILED. No cached token was found')
 		exit()
 
 	if is_token_expired(token_info):
+		print('  - Cached token expired.')
 		token = refresh_access_token(token_info['refresh_token'])
+	else:
+		print('  - Cached token VALID')
+		token = token_info['access_token']
 
 	return token
 
