@@ -264,3 +264,4 @@ def create_spotify_playlist(name):
 		pl_id = pl[name]
 
 	return pl_id
+	
