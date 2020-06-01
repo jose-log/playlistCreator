@@ -15,7 +15,8 @@
 *.txt
 
 # Secrets
-spotify_secrets.py
+secrets_spotify.py
+secrets_youtube.json
 .cache*
 
 # Sample javascript
@@ -23,8 +24,6 @@ spotify_secrets.py
 
 # Folders
 __pycache__/*
-spotify/*
-youtube-api-samples/*
 
 # Error while installing google client libraries
 ERROR
