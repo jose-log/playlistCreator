@@ -10,6 +10,7 @@ FILTER_TRACKS 		= 3
 REQUEST_AUTH 		= 4
 SEARCH_CATALOG 		= 5
 APPEND_TRACKS 		= 6
+YOUTUBE_N_VIDEOS 	= 7
 
 def ask_user(question):
 	
@@ -27,18 +28,30 @@ def ask_user(question):
 			x = input('Do you want to search in the spotify catalog? (Y/n) ')
 		elif (question == APPEND_TRACKS):
 			x = input('Do you want to append tracks to spotify playlist? (Y/n) ')
-
-		if x in 'yY' or x is '':
-			ans = True
-			break
-		elif x in 'nN':
-			ans = False
-			break
-		elif x in 'qQ':
-			exit()
+		elif (question == YOUTUBE_N_VIDEOS):
+			x = input('How many videos? [ENTER for all videos history] ')
+		
+		if question != YOUTUBE_N_VIDEOS:
+			if x in 'yY' or x is '':
+				ans = True
+				break
+			elif x in 'nN':
+				ans = False
+				break
+			elif x in 'qQ':
+				exit()
+			else:
+				print('INVALID!')
 		else:
-			print('INVALID!')
-	
+			if x is '':
+				ans = None
+				break
+			elif int(x) is not None:
+				ans = int(x)
+				break
+			else:
+				print('INVALID!')
+
 	return  ans
 
 ###############################################################################
@@ -73,7 +86,8 @@ if __name__ == '__main__':
 	# json-formatted response previously saved
 	#
 	if ask_user(YOUTUBE_DOWNLOAD):
-		pl_files = youtube.request_liked_playlist()
+		n = ask_user(YOUTUBE_N_VIDEOS)
+		pl_files = youtube.request_liked_playlist(n)
 	else:
 		pl_files = youtube.request_youtube_files()
 

@@ -114,11 +114,11 @@ class db(object):
 
 		print('  - Filtering Songs Using YoutubeDL')
 
-		if len(new_videos) is 0:
-			print('  - MESSAGE: Nothing to add to Database')
-			return
-
 		new_track_id = []
+
+		if len(new_videos) is 0:
+			print('  - MESSAGE: No videos to search for')
+			return new_track_id
 
 		conn = sqlite3.connect(self.name)		# Connect to the database. 
 		cur = conn.cursor()						# database handler object
@@ -201,6 +201,10 @@ class db(object):
 
 	#**************************************************************************
 	def search_spotify_catalog(self, new_tracks):
+
+		if len(new_tracks) is 0:
+			print('  - MESSAGE: Nothing to search for')
+			return
 
 		conn = sqlite3.connect(self.name)		# Connect to the database. 
 		cur = conn.cursor()						# database handler object

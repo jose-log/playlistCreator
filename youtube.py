@@ -56,7 +56,10 @@ def __request_service(service, **kwargs):
     
     return request.execute()
 
-def request_liked_playlist():
+def request_liked_playlist(n_videos):
+
+    if os.path.exists(INDEX_FILE) is True:
+        os.remove(INDEX_FILE)
 
     service = __get_authentincated_service()
 
@@ -67,7 +70,17 @@ def request_liked_playlist():
     i = 1
     files = []
     nxtPage = None
+
     while True:
+
+        if n_videos is None:
+            n = 50
+        elif n_videos >= 50:
+            n = 50
+            n_videos -= 50
+        else:
+            n = n_videos
+            n_videos = 0
         
         try:
             print('  - Requesting query No {} to Youtube Data API'.format(i))
@@ -75,7 +88,7 @@ def request_liked_playlist():
                 service, 
                 part = 'id,snippet,contentDetails',
                 myRating = 'like',
-                maxResults = 50,
+                maxResults = n,
                 pageToken = nxtPage,
                 fields = 'items(id,snippet(title),contentDetails(duration)),pageInfo,nextPageToken'
                 )
@@ -97,7 +110,11 @@ def request_liked_playlist():
         fh.write(outfile + '\n')
         fh.close()
 
-        nxtPage = response.get('nextPageToken', None)
+        if n_videos is None or n_videos > 0:
+            nxtPage = response.get('nextPageToken', None)
+        else:
+            nxtPage = None
+
         if nxtPage is None:
             try:
                 total = response['pageInfo']['totalResults']
