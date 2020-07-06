@@ -88,7 +88,7 @@ if __name__ == '__main__':
 	#
 	db = database.db('music.sqlite')
 	if (ask_user(STORE_DATABASE)):
-		database.store_in_database(pl_files, db)
+		new_videos = database.store_in_database(pl_files, db)
 
 	#**************************************************************************
 	# STEP 3:
@@ -99,7 +99,7 @@ if __name__ == '__main__':
 	# Skip step. It is assumed that songs info is already in database
 	#
 	if (ask_user(FILTER_TRACKS)):
-		db.filter_tracks()
+		new_tracks = db.filter_tracks(new_videos)
 	
 	#**************************************************************************
 	# STEP 4:
@@ -113,7 +113,7 @@ if __name__ == '__main__':
 	#
 	spotify.get_authorization()
 	if (ask_user(SEARCH_CATALOG)):
-		db.search_spotify_catalog()
+		db.search_spotify_catalog(new_tracks)
 
 	#**************************************************************************
 	# STEP 5:
@@ -126,6 +126,6 @@ if __name__ == '__main__':
 	#
 	pl_id = spotify.create_spotify_playlist('Youtube Liked Vids')
 	if (ask_user(APPEND_TRACKS)):
-		db.append_tracks_to_playlist(pl_id)
+		db.append_tracks_to_playlist(pl_id, new_tracks)
 	
 	print('\n\n... FINISH! ...')

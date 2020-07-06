@@ -89,7 +89,7 @@ def insert_into_playlist(pl_id, tracks):
 		}
 		payload = json.dumps(parameters)
 
-		print('Adding item to playlist...')
+		print('Adding items to playlist...')
 		response = requests.post(endpoint, data=payload, headers=head)
 		response_json = response.json()
 
@@ -264,4 +264,3 @@ def create_spotify_playlist(name):
 		pl_id = pl[name]
 
 	return pl_id
-	

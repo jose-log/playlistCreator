@@ -72,40 +72,58 @@ class db(object):
 
 		conn = sqlite3.connect(self.name)		# Connect to the database. 
 		cur = conn.cursor()						# database handler object
+		new_entries = []
 
-		cur.execute('INSERT OR IGNORE INTO videos (title, length, youtubeID) VALUES (?, ?, ?)',(title, duration, youtubeID))
+		try:
+			cur.execute('INSERT OR IGNORE INTO videos (title, length, youtubeID) VALUES (?, ?, ?)',(title, duration, youtubeID))
+			new_entries.append(youtubeID)
+		except:
+			print('  - WARNING: Already exists: ' + title + ' | ' + youtubeID)
 
 		conn.commit()	# Save changes
 		conn.close()	# Close database
+
+		return new_entries
+
 
 	#**************************************************************************
 	def insert_multiple_videos(self, videos):
 
 		conn = sqlite3.connect(self.name)		# Connect to the database. 
 		cur = conn.cursor()						# database handler object
+		new_entries = []
 
 		for i in videos:
-			cur.execute('''
-				INSERT OR IGNORE INTO videos (title, length, youtubeID) 
-				VALUES (?, ?, ?)''',(i['title'], i['duration'], i['youtubeID'])
-				)
+			try:
+				cur.execute('''
+					INSERT OR FAIL INTO videos (title, length, youtubeID) 
+					VALUES (?, ?, ?)''',(i['title'], i['duration'], i['youtubeID'])
+					)
+				new_entries.append(i['youtubeID'])
+			except:
+				print('  - MESSAGE: Already exists: ' + i['title'] + ' | ' + i['youtubeID'])
 
 		conn.commit()	# Save changes
 		conn.close()	# Close database
 
+		# returns list of YoutubeIDs newly added to Database
+		return new_entries
+
 	#**************************************************************************
-	def filter_tracks(self):
+	def filter_tracks(self, new_videos):
 
 		print('  - Filtering Songs Using YoutubeDL')
+
+		if len(new_videos) is 0:
+			print('  - MESSAGE: Nothing to add to Database')
+			return
+
+		new_track_id = []
 
 		conn = sqlite3.connect(self.name)		# Connect to the database. 
 		cur = conn.cursor()						# database handler object
 
-		cur.execute('SELECT youtubeID FROM videos')
-		items = cur.fetchall()
-
-		for i in items:
-			video_id = i[0]
+		for video_id in new_videos:
 			youtube_url = 'https://www.youtube.com/watch?v={}'.format(video_id)
 			
 			try:
@@ -129,14 +147,22 @@ class db(object):
 					cur.execute('SELECT id FROM tracks WHERE name = ?', (track_name,))
 					track_id = cur.fetchone()
 					cur.execute('UPDATE videos SET id_tracks = ? WHERE youtubeID = ?', (track_id[0], video_id))
+					# Keep track of new tracks added
+					new_track_id.append(track_id[0])
 				except:
 					print('ERROR when adding to database: ' + track_name + ', ' + artist_name + 'NOT ADDED')
 
 		conn.commit()	# Save changes
 		conn.close()	# Close database
 
+		# Return the track_id (in database) of the newly added tracks
+		return new_track_id
+
 	#**************************************************************************
 	def filter_single_track(self, youtubeID):
+
+		if youtubeID is None:
+			return
 
 		conn = sqlite3.connect(self.name)		# Connect to the database. 
 		cur = conn.cursor()						# database handler object
@@ -174,7 +200,7 @@ class db(object):
 		conn.close()	# Close database
 
 	#**************************************************************************
-	def search_spotify_catalog(self):
+	def search_spotify_catalog(self, new_tracks):
 
 		conn = sqlite3.connect(self.name)		# Connect to the database. 
 		cur = conn.cursor()						# database handler object
@@ -182,44 +208,52 @@ class db(object):
 		cur.execute('SELECT tracks.id, tracks.name, artists.name FROM tracks JOIN artists ON tracks.id_artists = artists.id')
 		items = cur.fetchall()
 
-		print('\n  - Total # of Tracks: ' + str(len(items)))
+		print('\n  - Total # of NEW Tracks: ' + str(len(new_tracks)))
 		print('  - Searching in Spotify Catalog')
 		for i in items:
 			track_id = i[0]
 			track_name = i[1]
 			artist_name = i[2]
-			print(' > Search: ' + track_name + ', ' + artist_name)
-			uri = spotify.search_catalog(track_name, artist_name)
-			if uri is not None:
-				cur.execute('UPDATE tracks SET spotifyID = ? WHERE id = ?', (uri, track_id))
-			else:
-				print('WARNING: not found')
+			if track_id in new_tracks:
+				print(' > Search: ' + track_name + ', ' + artist_name)
+				uri = spotify.search_catalog(track_name, artist_name)
+				if uri is not None:
+					cur.execute('UPDATE tracks SET spotifyID = ? WHERE id = ?', (uri, track_id))
+				else:
+					print('WARNING: not found')
 
 		conn.commit()	# Save changes
 		conn.close()	# Close database
 
 	#**************************************************************************
-	def append_tracks_to_playlist(self, playlist_id):
+	def append_tracks_to_playlist(self, playlist_id, new_tracks):
 
 		conn = sqlite3.connect(self.name)		# Connect to the database. 
 		cur = conn.cursor()						# database handler object
 
-		cur.execute('SELECT tracks.spotifyID FROM tracks WHERE spotifyID IS NOT NULL')
+		cur.execute('SELECT tracks.id, tracks.spotifyID FROM tracks WHERE spotifyID IS NOT NULL')
 		items = cur.fetchall()
 
 		conn.commit()	# Save changes
 		conn.close()	# Close database
 
 		tracks = []
+		
 		for i in items:
-			tracks.append(i[0])
+			# choose only the newly added ones
+			if i[0] in new_tracks:
+				tracks.append(i[1])
 
-		spotify.insert_into_playlist(playlist_id, tracks)
+		if len(tracks) is not 0:
+			spotify.insert_into_playlist(playlist_id, tracks)
+		else:
+			print(' - WARNING: No tracks to be added')
 
 #******************************************************************************
 def store_in_database(files, db_obj):
 
 	n = 0
+	new_videos = []
 	# Extract info from files
 	for f in files:
 		if os.path.exists(f):
@@ -252,9 +286,12 @@ def store_in_database(files, db_obj):
 			print('ERROR. JSON file not properly formatted')
 			exit()
 
-		db_obj.insert_multiple_videos(videos)
+		# Concatenate videos' IDs newly added to database
+		new_videos.extend(db_obj.insert_multiple_videos(videos))
 
 	print('\n >> TOTAL ITEMS: ' + str(n) + '\n')
+
+	return new_videos
 
 #******************************************************************************
 def __get_time(time):
