@@ -6,9 +6,10 @@ Extracting _"liked"_ videos playlist from YouTube and syncing with Spotify.
 A blog post describing the project: https://joselog.co/python/python_and_apis
 
 I first watched this project here: https://www.youtube.com/watch?v=7J_qcttfnJA&list=WL&index=79&t=0s
+
 The original project repo is: https://github.com/TheComeUpCode/SpotifyGeneratePlaylist
 
-This is my own implementation of the original project. I took it as a learning resource on Python itself and web APIs (including OAuth2.0), including many web application concepts. Some additions and improvements:
+This is my own implementation of the original project. I took it as a learning resource for Python itself and web APIs (including OAuth2.0), besides many web applications concepts. Some additions and improvements to the original project:
 
 * _Using SQLite Databases_
 * _Spotify OAuth2.0 Authentication_
