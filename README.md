@@ -44,4 +44,4 @@ Finally, thanks to [The Come Up](https://www.youtube.com/channel/UC-bFgwL_kFKLZA
 
 ## License
 
-Released under the [MIT License][LICENSE] - 2020 Jose Logreira
+Released under the [MIT License](LICENSE) - 2020 Jose Logreira
