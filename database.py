@@ -34,7 +34,7 @@ class db(object):
 		self.name = name
 		
 		if os.path.exists(self.name) is True:
-			print('  - Opening databajse file \"' + self.name + '\"')
+			print('  - Opening database file \"' + self.name + '\"')
 		else:
 			print('  - Creating database file \"' + self.name + '\"')
 		conn = sqlite3.connect(self.name)	# Connect to the database. If non-existent, create it.
